@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카카오골프예약 자연어 검색 기획안</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kakao-yellow: #FEE500;
+            --kakao-brown: #3C1E1E;
+            --kakao-black: #191919;
+            --accent-pink: #FF6B9D;
+            --accent-green: #4CD964;
+            --accent-blue: #5AC8FA;
+            --accent-purple: #AF52DE;
+            --accent-orange: #FF9500;
+            --bg-dark: #0D0D0D;
+            --bg-card: #1A1A1A;
+            --bg-card-hover: #252525;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --text-muted: #666666;
+            --gradient-1: linear-gradient(135deg, #FEE500 0%, #FFB800 100%);
+            --gradient-2: linear-gradient(135deg, #FF6B9D 0%, #FF8A65 100%);
+            --gradient-3: linear-gradient(135deg, #4CD964 0%, #5AC8FA 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(13, 13, 13, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0 40px;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Slide Container */
+        .slide {
+            min-height: 100vh;
+            padding: 120px 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Hero Slide */
+        .hero {
+            background: radial-gradient(ellipse at 30% 20%, rgba(254, 229, 0, 0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(255, 107, 157, 0.1) 0%, transparent 50%),
+                        var(--bg-dark);
+            text-align: center;
+            padding-top: 140px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(254, 229, 0, 0.1);
+            border: 1px solid rgba(254, 229, 0, 0.3);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--kakao-yellow);
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: clamp(42px, 6vw, 72px);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #E0E0E0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Section Header */
+        .section-header {
+            margin-bottom: 60px;
+        }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--kakao-yellow);
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-4px);
+            border-color: rgba(254, 229, 0, 0.2);
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon.yellow { background: rgba(254, 229, 0, 0.15); }
+        .card-icon.pink { background: rgba(255, 107, 157, 0.15); }
+        .card-icon.green { background: rgba(76, 217, 100, 0.15); }
+        .card-icon.blue { background: rgba(90, 200, 250, 0.15); }
+        .card-icon.purple { background: rgba(175, 82, 222, 0.15); }
+        .card-icon.orange { background: rgba(255, 149, 0, 0.15); }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Compare Section */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .compare-box {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .compare-box.as-is {
+            border-color: rgba(255, 107, 157, 0.3);
+        }
+
+        .compare-box.to-be {
+            border-color: rgba(76, 217, 100, 0.3);
+        }
+
+        .compare-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .compare-label.as-is {
+            background: rgba(255, 107, 157, 0.15);
+            color: var(--accent-pink);
+        }
+
+        .compare-label.to-be {
+            background: rgba(76, 217, 100, 0.15);
+            color: var(--accent-green);
+        }
+
+        .compare-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .compare-list {
+            list-style: none;
+        }
+
+        .compare-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .compare-list li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            margin-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .compare-arrow {
+            font-size: 48px;
+            color: var(--kakao-yellow);
+            opacity: 0.5;
+        }
+
+        /* Flow Diagram */
+        .flow-container {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 60px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .flow-node {
+            padding: 20px 32px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .flow-node.input {
+            background: var(--gradient-1);
+            color: var(--kakao-black);
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+            padding: 20px 48px;
+        }
+
+        .flow-node.process {
+            background: rgba(76, 217, 100, 0.15);
+            border: 2px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .flow-node.decision {
+            background: rgba(90, 200, 250, 0.15);
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+            transform: rotate(0deg);
+        }
+
+        .flow-node.agent {
+            background: rgba(255, 107, 157, 0.15);
+            border: 2px solid var(--accent-pink);
+            color: var(--accent-pink);
+        }
+
+        .flow-node.output {
+            background: rgba(175, 82, 222, 0.15);
+            border: 2px solid var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .flow-arrow {
+            font-size: 24px;
+            color: var(--text-muted);
+        }
+
+        .flow-branch {
+            display: flex;
+            gap: 40px;
+            width: 100%;
+            max-width: 900px;
+            justify-content: center;
+        }
+
+        .flow-branch-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flow-branch-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Tools Section */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .tool-card.tool-1 {
+            border-top: 3px solid var(--accent-green);
+        }
+
+        .tool-card.tool-2 {
+            border-top: 3px solid var(--accent-blue);
+        }
+
+        .tool-card.tool-3 {
+            border-top: 3px solid var(--accent-purple);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .tool-card.tool-1 .tool-icon { background: rgba(76, 217, 100, 0.15); }
+        .tool-card.tool-2 .tool-icon { background: rgba(90, 200, 250, 0.15); }
+        .tool-card.tool-3 .tool-icon { background: rgba(175, 82, 222, 0.15); }
+
+        .tool-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .tool-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .tool-features {
+            list-style: none;
+        }
+
+        .tool-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tool-features li::before {
+            content: '✓';
+            color: var(--accent-green);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Scenarios */
+        .scenarios-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .scenario-chip {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-chip:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(254, 229, 0, 0.3);
+        }
+
+        .scenario-chip .emoji {
+            font-size: 20px;
+        }
+
+        /* Cache Strategy */
+        .cache-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 48px;
+        }
+
+        .cache-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cache-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .cache-icon.search { background: rgba(254, 229, 0, 0.15); }
+        .cache-icon.cache { background: rgba(90, 200, 250, 0.15); }
+        .cache-icon.tool { background: rgba(255, 107, 157, 0.15); }
+        .cache-icon.save { background: rgba(76, 217, 100, 0.15); }
+
+        .cache-label {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .cache-arrow {
+            font-size: 24px;
+            color: var(--text-muted);
+        }
+
+        .cache-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .cache-table th,
+        .cache-table td {
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .cache-table th {
+            background: rgba(255,255,255,0.03);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .cache-table td {
+            font-size: 14px;
+        }
+
+        .cache-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ttl-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(254, 229, 0, 0.15);
+            color: var(--kakao-yellow);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--kakao-yellow), var(--accent-pink), var(--accent-green));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 72px;
+            margin-bottom: 40px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 12px;
+            top: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--kakao-yellow);
+            border: 4px solid var(--bg-dark);
+        }
+
+        .timeline-week {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--kakao-yellow);
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .timeline-desc {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Cost Section */
+        .cost-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .cost-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .cost-card h4 {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .cost-value {
+            font-size: 36px;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cost-unit {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .cost-formula {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Price Table */
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+
+        .price-table th,
+        .price-table td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .price-table th {
+            background: rgba(255,255,255,0.03);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .price-table td {
+            font-size: 14px;
+        }
+
+        .price-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .price-highlight {
+            background: rgba(254, 229, 0, 0.1);
+            font-weight: 700;
+        }
+
+        .price-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .price-badge.recommended {
+            background: rgba(76, 217, 100, 0.15);
+            color: var(--accent-green);
+        }
+
+        .price-badge.premium {
+            background: rgba(175, 82, 222, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .price-badge.budget {
+            background: rgba(90, 200, 250, 0.15);
+            color: var(--accent-blue);
+        }
+
+        /* Summary */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(254, 229, 0, 0.1) 0%, rgba(255, 107, 157, 0.1) 100%);
+            border: 1px solid rgba(254, 229, 0, 0.2);
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+        }
+
+        .summary-quote {
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.7;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .summary-quote strong {
+            color: var(--kakao-yellow);
+            font-weight: 700;
+        }
+
+        /* Matrix Table */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-right: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .matrix-table th:last-child,
+        .matrix-table td:last-child {
+            border-right: none;
+        }
+
+        .matrix-table th {
+            background: rgba(255,255,255,0.03);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .matrix-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .matrix-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .check-primary {
+            color: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .check-secondary {
+            color: var(--kakao-yellow);
+            font-size: 11px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .slide {
+                padding: 100px 30px 60px;
+            }
+
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .compare-arrow {
+                transform: rotate(90deg);
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero-stats {
+                gap: 30px;
+            }
+
+            .flow-container {
+                padding: 30px;
+                overflow-x: auto;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .scroll-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scroll-dot:hover,
+        .scroll-dot.active {
+            background: var(--kakao-yellow);
+            transform: scale(1.3);
+        }
+
+        /* Agent Box */
+        .agent-box {
+            background: rgba(255, 107, 157, 0.08);
+            border: 2px solid rgba(255, 107, 157, 0.3);
+            border-radius: 20px;
+            padding: 32px;
+            margin-top: 24px;
+        }
+
+        .agent-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-pink);
+            margin-bottom: 20px;
+        }
+
+        .agent-flow {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .agent-step {
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .mini-arrow {
+            color: var(--text-muted);
+        }
+
+        /* Cost Highlight Box */
+        .cost-highlight-box {
+            background: linear-gradient(135deg, rgba(76, 217, 100, 0.1) 0%, rgba(90, 200, 250, 0.1) 100%);
+            border: 1px solid rgba(76, 217, 100, 0.3);
+            border-radius: 20px;
+            padding: 32px;
+            margin-top: 32px;
+        }
+
+        .cost-highlight-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cost-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .cost-summary-item {
+            text-align: center;
+        }
+
+        .cost-summary-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--kakao-yellow);
+        }
+
+        .cost-summary-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="logo">
+                <div class="logo-icon">🏌️</div>
+                <span>카카오골프예약</span>
+            </div>
+            <div class="nav-links">
+                <a href="#hero">개요</a>
+                <a href="#background">배경</a>
+                <a href="#flow">구조</a>
+                <a href="#tools">툴</a>
+                <a href="#cache">캐시</a>
+                <a href="#cost">비용</a>
+                <a href="#schedule">일정</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="scroll-indicator">
+        <div class="scroll-dot active" onclick="scrollToSection('hero')"></div>
+        <div class="scroll-dot" onclick="scrollToSection('background')"></div>
+        <div class="scroll-dot" onclick="scrollToSection('flow')"></div>
+        <div class="scroll-dot" onclick="scrollToSection('tools')"></div>
+        <div class="scroll-dot" onclick="scrollToSection('scenarios')"></div>
+        <div class="scroll-dot" onclick="scrollToSection('cache')"></div>
+        <div class="scroll-dot" onclick="scrollToSection('cost')"></div>
+        <div class="scroll-dot" onclick="scrollToSection('schedule')"></div>
+        <div class="scroll-dot" onclick="scrollToSection('summary')"></div>
+    </div>
+
+    <!-- Slide 1: Hero -->
+    <section id="hero" class="slide hero">
+        <div class="slide-content">
+            <div class="hero-badge">
+                📋 기획안 최종본 v1.0
+            </div>
+            <h1>
+                카카오골프예약<br>
+                <span>자연어 검색</span> 기획안
+            </h1>
+            <p>
+                "경기 라운딩", "그린 빠른 골프장" 같은 자연어 질의를<br>
+                정확한 골프장 리스트로 변환하는 지능형 검색 시스템
+            </p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-value">6-8</div>
+                    <div class="stat-label">개발 기간 (주)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">핵심 도구</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">30%</div>
+                    <div class="stat-label">0건 탈출 목표</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 2: Background -->
+    <section id="background" class="slide">
+        <div class="slide-content">
+            <div class="section-header">
+                <div class="section-number">01</div>
+                <h2 class="section-title">배경 및 목표</h2>
+                <p class="section-desc">기존 검색의 한계를 극복하고 사용자 의도를 이해하는 검색으로</p>
+            </div>
+
+            <div class="compare-grid">
+                <div class="compare-box as-is">
+                    <div class="compare-label as-is">❌ AS-IS</div>
+                    <h3 class="compare-title">정확 매칭 중심</h3>
+                    <ul class="compare-list">
+                        <li>지역/골프장명/키워드 기반 정확 매칭</li>
+                        <li>"경기", "솔트베이", "노캐디"처럼 100% 맞는 단어만 검색됨</li>
+                        <li>"경기 라운딩", "주말 라운딩" 같은 문장형 → 0건 빈번</li>
+                        <li>"그린 빠른 골프장" 같은 의도형 검색 불가</li>
+                        <li>탐색 실패로 인한 이탈 증가</li>
+                    </ul>
+                </div>
+
+                <div class="compare-arrow">→</div>
+
+                <div class="compare-box to-be">
+                    <div class="compare-label to-be">✓ TO-BE</div>
+                    <h3 class="compare-title">자연어 의도 이해</h3>
+                    <ul class="compare-list">
+                        <li>사용자는 자연어로 자유롭게 검색</li>
+                        <li>기존 검색(정확매칭) 먼저 실행 → 속도 보장</li>
+                        <li>0건일 때만 컨텍스트 에이전트 실행</li>
+                        <li>캐시 우선 + 필요 시 툴(리뷰DB/예약DB/GPT) 호출</li>
+                        <li>결과 UI는 기존 골프장 리스트 100% 유지</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: Flow -->
+    <section id="flow" class="slide">
+        <div class="slide-content">
+            <div class="section-header">
+                <div class="section-number">02</div>
+                <h2 class="section-title">전체 구조/동작</h2>
+                <p class="section-desc">확정된 플로우 기준 실행 흐름</p>
+            </div>
+
+            <div class="flow-container">
+                <div class="flow-diagram">
+                    <!-- Step 1 -->
+                    <div class="flow-step" style="justify-content: center;">
+                        <div class="flow-node input">🔍 자연어 검색 입력</div>
+                    </div>
+                    
+                    <div class="flow-arrow">↓</div>
+
+                    <!-- Step 2 -->
+                    <div class="flow-step" style="justify-content: center;">
+                        <div class="flow-node process">기존 검색 실행<br><small style="opacity:0.7">지역/골프장명/키워드</small></div>
+                    </div>
+
+                    <div class="flow-arrow">↓</div>
+
+                    <!-- Step 3: Decision -->
+                    <div class="flow-step" style="justify-content: center;">
+                        <div class="flow-node decision">◇ 기존 검색 결과 여부</div>
+                    </div>
+
+                    <!-- Branches -->
+                    <div class="flow-branch">
+                        <div class="flow-branch-item">
+                            <div class="flow-branch-label" style="color: var(--accent-green);">검색 결과 O</div>
+                            <div class="flow-arrow">↓</div>
+                            <div class="flow-node output">기존 검색 결과 노출<br><small style="opacity:0.7">골프장 리스트 (종료)</small></div>
+                        </div>
+
+                        <div class="flow-branch-item">
+                            <div class="flow-branch-label" style="color: var(--accent-pink);">검색 결과 X</div>
+                            <div class="flow-arrow">↓</div>
+                            <div class="flow-node agent">컨텍스트 에이전트 실행</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Detail -->
+                <div class="agent-box">
+                    <div class="agent-title">
+                        🤖 컨텍스트 에이전트 내부 흐름
+                    </div>
+                    <div class="agent-flow">
+                        <div class="agent-step">🔎 캐시 검색</div>
+                        <span class="mini-arrow">→</span>
+                        <div class="agent-step" style="border: 1px dashed var(--text-muted);">miss 시</div>
+                        <span class="mini-arrow">→</span>
+                        <div class="agent-step">🛠️ 툴 호출<br><small style="color: var(--text-muted);">통합리뷰DB / 골프예약DB / GPT웹서치</small></div>
+                        <span class="mini-arrow">→</span>
+                        <div class="agent-step">💾 결과값 캐시 적재</div>
+                        <span class="mini-arrow">→</span>
+                        <div class="agent-step" style="background: rgba(175, 82, 222, 0.15);">📋 골프 예약 API 조회</div>
+                        <span class="mini-arrow">→</span>
+                        <div class="agent-step" style="background: var(--kakao-yellow); color: var(--kakao-black);">🏌️ 골프장 리스트 노출</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Tools -->
+    <section id="tools" class="slide">
+        <div class="slide-content">
+            <div class="section-header">
+                <div class="section-number">03</div>
+                <h2 class="section-title">툴별 커버 범위</h2>
+                <p class="section-desc">3가지 핵심 도구와 각각의 역할</p>
+            </div>
+
+            <div class="tools-grid">
+                <!-- Tool 1 -->
+                <div class="tool-card tool-1">
+                    <div class="tool-header">
+                        <div class="tool-icon">🗄️</div>
+                        <div>
+                            <div class="tool-name">Tool 1: 골프 예약 DB</div>
+                        </div>
+                    </div>
+                    <p class="tool-desc">
+                        <strong>최종 결과 생성/검증 담당</strong><br>
+                        모든 노출 결과는 반드시 Tool1 기준(골프 예약 API 조회)으로만 생성
+                    </p>
+                    <ul class="tool-features">
+                        <li>날짜/시간: 오늘/내일/주말/특정일, 새벽/오전/오후/야간</li>
+                        <li>지역/거리: 서울/경기/강원/충청/경상/전라, 근교→반경</li>
+                        <li>가격: n만원 이하, 가성비(상한/정렬 치환)</li>
+                        <li>인원/조건: 2/3/4인, 조인 가능</li>
+                        <li>옵션: 노캐디/셀프체크인/환급·할인/임박특가</li>
+                        <li>정렬: 추천/가격/거리/평점</li>
+                    </ul>
+                </div>
+
+                <!-- Tool 2 -->
+                <div class="tool-card tool-2">
+                    <div class="tool-header">
+                        <div class="tool-icon">⭐</div>
+                        <div>
+                            <div class="tool-name">Tool 2: 통합 리뷰 DB</div>
+                        </div>
+                    </div>
+                    <p class="tool-desc">
+                        <strong>체감/평판 속성 기반 후보 생성</strong><br>
+                        카카오 리뷰 + 네이버 크롤링으로 예약DB에 없는 속성 커버
+                    </p>
+                    <ul class="tool-features">
+                        <li>그린 속도/컨디션 (빠름/느림/모래 많음)</li>
+                        <li>코스 관리/난이도/밀림 정도</li>
+                        <li>페어웨이 넓음/좁음, 블라인드홀, 벙커</li>
+                        <li>시설/클럽하우스 청결/고급스러움</li>
+                        <li>식당/음식 품질, 가성비</li>
+                        <li>캐디/직원 서비스, 접근성 체감</li>
+                        <li>대회 개최 이력 (KLPGA 등)</li>
+                    </ul>
+                </div>
+
+                <!-- Tool 3 -->
+                <div class="tool-card tool-3">
+                    <div class="tool-header">
+                        <div class="tool-icon">🌐</div>
+                        <div>
+                            <div class="tool-name">Tool 3: GPT (웹서치)</div>
+                        </div>
+                    </div>
+                    <p class="tool-desc">
+                        <strong>지식형/추론형/실시간 정보 보완</strong><br>
+                        Tool2로 커버 불가한 지식형, 최신 정보, 외부 랭킹 담당
+                    </p>
+                    <ul class="tool-features">
+                        <li>"명문 골프장" 같은 추상/명성 질의</li>
+                        <li>"접대용으로 유명한 골프장"</li>
+                        <li>Tool2 데이터 부족 시 "대회 개최 골프장"</li>
+                        <li>코스명/별칭/오타 교정 및 후보 생성</li>
+                        <li>최근 리모델링/신규 오픈 골프장</li>
+                        <li>골프 다이제스트/잡지 선정 베스트 코스</li>
+                        <li>프로 골퍼/연예인 추천 골프장</li>
+                        <li>링크스/파크/밸리 스타일 코스 분류</li>
+                        <li style="color: var(--accent-pink);">※ 비용 발생! Tool2 우선 사용 원칙</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Scenarios -->
+    <section id="scenarios" class="slide">
+        <div class="slide-content">
+            <div class="section-header">
+                <div class="section-number">04</div>
+                <h2 class="section-title">시나리오 범위 (MVP)</h2>
+                <p class="section-desc">각 도구별 처리 가능한 질의 유형</p>
+            </div>
+
+            <div style="margin-bottom: 48px;">
+                <h3 style="font-size: 18px; margin-bottom: 20px; color: var(--accent-green);">
+                    🗄️ Tool1(예약DB) 시나리오 — 슬롯 변환 재조회
+                </h3>
+                <div class="scenarios-container">
+                    <div class="scenario-chip"><span class="emoji">📍</span> "경기 라운딩"</div>
+                    <div class="scenario-chip"><span class="emoji">🗓️</span> "주말 경기 오전"</div>
+                    <div class="scenario-chip"><span class="emoji">👥</span> "내일 서울 근교 2인 조인"</div>
+                    <div class="scenario-chip"><span class="emoji">🌙</span> "강원 야간 노캐디"</div>
+                    <div class="scenario-chip"><span class="emoji">💰</span> "5만원 이하 가성비 라운딩"</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 48px;">
+                <h3 style="font-size: 18px; margin-bottom: 20px; color: var(--accent-blue);">
+                    ⭐ Tool2(리뷰DB) 시나리오 — 체감/평판 속성 기반
+                </h3>
+                <div class="scenarios-container">
+                    <div class="scenario-chip"><span class="emoji">⛳</span> "그린 빠른/느린 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">✨</span> "그린 상태 좋은 곳"</div>
+                    <div class="scenario-chip"><span class="emoji">🌿</span> "코스 관리 잘 된 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">⏱️</span> "밀리지 않는/진행 빠른 곳"</div>
+                    <div class="scenario-chip"><span class="emoji">👶</span> "초보자 부담 없는 곳"</div>
+                    <div class="scenario-chip"><span class="emoji">🏟️</span> "페어웨이 넓은 곳"</div>
+                    <div class="scenario-chip"><span class="emoji">🌙</span> "야간 조명 밝은 곳"</div>
+                    <div class="scenario-chip"><span class="emoji">🏢</span> "클럽하우스 깨끗한 곳"</div>
+                    <div class="scenario-chip"><span class="emoji">🍽️</span> "밥 맛있는 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🏆</span> "대회 열렸던 골프장(KLPGA 등)"</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 48px;">
+                <h3 style="font-size: 18px; margin-bottom: 20px; color: var(--accent-purple);">
+                    🌐 Tool3(GPT 웹서치) 시나리오 — 지식형/실시간/외부 정보
+                </h3>
+                <div class="scenarios-container">
+                    <div class="scenario-chip"><span class="emoji">🎖️</span> "명문 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🤝</span> "접대용으로 유명한 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🏆</span> "대회 열렸던 골프장" (Tool2 부족 시)</div>
+                    <div class="scenario-chip"><span class="emoji">🆕</span> "최근 리모델링한 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🏗️</span> "2024년 오픈한 신규 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">📰</span> "최근 그린 전면 교체한 곳"</div>
+                    <div class="scenario-chip"><span class="emoji">📊</span> "골프 다이제스트 선정 베스트 코스"</div>
+                    <div class="scenario-chip"><span class="emoji">⭐</span> "프로 골퍼가 추천하는 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">📺</span> "드라마/영화 촬영지 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🎬</span> "연예인이 자주 가는 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🌊</span> "링크스 스타일 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🏔️</span> "산악/밸리 코스 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🌏</span> "PGA/LPGA 코스 스타일 골프장"</div>
+                    <div class="scenario-chip"><span class="emoji">🏅</span> "제주도 명문 골프장 TOP 5"</div>
+                </div>
+                <p style="font-size: 13px; color: var(--accent-pink); margin-top: 16px;">
+                    ⚠️ 웹서치 시나리오는 GPT 호출 비용이 발생합니다. 캐시 적극 활용 필요!
+                </p>
+            </div>
+
+            <!-- Matrix Table -->
+            <div style="margin-top: 60px;">
+                <h3 style="font-size: 18px; margin-bottom: 20px;">📊 시나리오 → 툴 호출 매트릭스</h3>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">시나리오 유형</th>
+                            <th>Tool1<br>(예약DB)</th>
+                            <th>Tool2<br>(리뷰DB)</th>
+                            <th>Tool3<br>(GPT웹서치)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>날짜/시간/지역/가격 조건</td>
+                            <td><span class="check-primary">● 주</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>인원/조인/옵션 조건</td>
+                            <td><span class="check-primary">● 주</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>그린/코스/관리 품질</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td><span class="check-primary">● 주</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>밀림/진행/난이도</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td><span class="check-primary">● 주</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>시설/식당/서비스</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td><span class="check-primary">● 주</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr style="background: rgba(90, 200, 250, 0.05);">
+                            <td>대회 개최 골프장</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td><span class="check-primary">● 주</span></td>
+                            <td><span class="check-secondary">○ 보조</span></td>
+                        </tr>
+                        <tr style="background: rgba(90, 200, 250, 0.05);">
+                            <td>명문/접대 (명성 질의)</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td>-</td>
+                            <td><span class="check-primary">● 주</span></td>
+                        </tr>
+                        <tr style="background: rgba(90, 200, 250, 0.05);">
+                            <td>최근 리모델링/신규 오픈</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td>-</td>
+                            <td><span class="check-primary">● 주</span></td>
+                        </tr>
+                        <tr style="background: rgba(90, 200, 250, 0.05);">
+                            <td>잡지/랭킹 선정 베스트 코스</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td>-</td>
+                            <td><span class="check-primary">● 주</span></td>
+                        </tr>
+                        <tr style="background: rgba(90, 200, 250, 0.05);">
+                            <td>프로/연예인 추천</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td>-</td>
+                            <td><span class="check-primary">● 주</span></td>
+                        </tr>
+                        <tr style="background: rgba(90, 200, 250, 0.05);">
+                            <td>코스 스타일 (링크스/밸리 등)</td>
+                            <td><span class="check-secondary">○ 검증</span></td>
+                            <td><span class="check-secondary">○ 보조</span></td>
+                            <td><span class="check-primary">● 주</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 12px;">
+                    ● 주: 주 담당 도구 | ○ 검증/보조: 보조 역할 또는 최종 검증 | <span style="color: var(--accent-blue);">파란 배경: GPT 웹서치 필요 시나리오</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: Cache -->
+    <section id="cache" class="slide">
+        <div class="slide-content">
+            <div class="section-header">
+                <div class="section-number">05</div>
+                <h2 class="section-title">캐시 전략</h2>
+                <p class="section-desc">툴 결과 전체를 캐시하여 비용과 지연 최소화</p>
+            </div>
+
+            <div class="cache-flow">
+                <div class="cache-step">
+                    <div class="cache-icon search">🔍</div>
+                    <div class="cache-label">캐시 검색</div>
+                </div>
+                <div class="cache-arrow">→</div>
+                <div class="cache-step">
+                    <div class="cache-icon cache">💾</div>
+                    <div class="cache-label">Hit → 바로 사용</div>
+                </div>
+                <div class="cache-arrow">|</div>
+                <div class="cache-step">
+                    <div class="cache-icon tool">🛠️</div>
+                    <div class="cache-label">Miss → 툴 호출</div>
+                </div>
+                <div class="cache-arrow">→</div>
+                <div class="cache-step">
+                    <div class="cache-icon save">✅</div>
+                    <div class="cache-label">결과 캐시 적재</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 48px;">
+                <h3 style="font-size: 18px; margin-bottom: 20px;">📦 캐시 적재 대상</h3>
+                <table class="cache-table">
+                    <thead>
+                        <tr>
+                            <th>캐시 유형</th>
+                            <th>내용</th>
+                            <th>TTL (권장)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>NLU 캐시</strong></td>
+                            <td>정규화된 intent/slots</td>
+                            <td><span class="ttl-badge">1~7일</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>후보 캐시 (핵심)</strong></td>
+                            <td>질의키 → 후보 코스ID TopK + 랭킹점수 + 사용한 슬롯</td>
+                            <td><span class="ttl-badge">1~7일</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>리뷰 속성 캐시</strong></td>
+                            <td>(aspect, 지역 등 조건) → 코스ID TopK + 점수/근거 카운트</td>
+                            <td><span class="ttl-badge">1~7일</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>GPT 후보/매핑 캐시</strong></td>
+                            <td>지식 질의 → 코스명 리스트/ID 매핑 결과</td>
+                            <td><span class="ttl-badge">7~30일</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>웹서치 결과 캐시</strong></td>
+                            <td>최신 정보 질의 → 골프장 리스트 + 출처</td>
+                            <td><span class="ttl-badge">3~14일</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>트렌드 요약 캐시</strong> (선택)</td>
+                            <td>최근 개선/악화 요약</td>
+                            <td><span class="ttl-badge">7일</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card" style="border-left: 3px solid var(--accent-pink);">
+                    <div class="card-icon pink">⚠️</div>
+                    <h3>캐시 금지 항목</h3>
+                    <p>티타임 잔여/가격/잔여팀은 변동성이 커서 <strong>장기 캐시 금지</strong><br>최종 노출 직전에는 항상 Tool1(예약DB)로 재검증 필수</p>
+                </div>
+                <div class="card" style="border-left: 3px solid var(--accent-green);">
+                    <div class="card-icon green">✓</div>
+                    <h3>핵심 원칙</h3>
+                    <p>GPT 결과만 캐시 ❌<br><strong>리뷰/매핑/후보/파싱까지 포함 ⭕</strong><br>재사용 가치 있는 모든 툴 결과를 적재</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Cost -->
+    <section id="cost" class="slide">
+        <div class="slide-content">
+            <div class="section-header">
+                <div class="section-number">06</div>
+                <h2 class="section-title">토큰/비용 산정</h2>
+                <p class="section-desc">GPT 호출 중심 비용 추정 (기존검색/예약DB/리뷰DB는 토큰 비용 없음)</p>
+            </div>
+
+            <div class="cost-cards">
+                <div class="cost-card">
+                    <h4>GPT 1회 호출 토큰 (목표)</h4>
+                    <div class="cost-value">~1,000 <span class="cost-unit">tokens</span></div>
+                    <div class="cost-formula">
+                        입력: 700~1,000<br>
+                        출력: 150~300<br>
+                        평균: ~850~1,300 tokens/회
+                    </div>
+                </div>
+                <div class="cost-card">
+                    <h4>일간 GPT 호출수 (예시)</h4>
+                    <div class="cost-value">1,800 <span class="cost-unit">회/일</span></div>
+                    <div class="cost-formula">
+                        일 검색 100,000<br>
+                        × 0건 비율 30%<br>
+                        × 지식형 비율 20%<br>
+                        × 캐시 miss율 30%
+                    </div>
+                </div>
+                <div class="cost-card">
+                    <h4>월간 토큰 (예시)</h4>
+                    <div class="cost-value">54M <span class="cost-unit">tokens</span></div>
+                    <div class="cost-formula">
+                        일 1,800회 × 30일 = 54,000회<br>
+                        54,000 × 1,000 = 54M tokens<br>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPT 모델별 비용 테이블 -->
+            <div style="margin-top: 48px;">
+                <h3 style="font-size: 18px; margin-bottom: 20px;">💰 GPT 모델별 토큰 비용 (2024 기준)</h3>
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>모델</th>
+                            <th>Input (1M tokens)</th>
+                            <th>Output (1M tokens)</th>
+                            <th>특징</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>GPT-4o</strong> <span class="price-badge recommended">추천</span></td>
+                            <td>$2.50</td>
+                            <td>$10.00</td>
+                            <td>속도↑ 비용↓ 품질 우수</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GPT-4o-mini</strong> <span class="price-badge budget">저비용</span></td>
+                            <td>$0.15</td>
+                            <td>$0.60</td>
+                            <td>단순 작업에 적합</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GPT-4 Turbo</strong> <span class="price-badge premium">고성능</span></td>
+                            <td>$10.00</td>
+                            <td>$30.00</td>
+                            <td>복잡한 추론 필요 시</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GPT-3.5 Turbo</strong></td>
+                            <td>$0.50</td>
+                            <td>$1.50</td>
+                            <td>레거시 (권장 X)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 월간 비용 예상 -->
+            <div class="cost-highlight-box">
+                <div class="cost-highlight-title">
+                    💵 월간 예상 비용 (54M tokens 기준)
+                </div>
+                <table class="price-table" style="margin-top: 0;">
+                    <thead>
+                        <tr>
+                            <th>모델</th>
+                            <th>Input 비용<br>(54M × 70%)</th>
+                            <th>Output 비용<br>(54M × 30%)</th>
+                            <th style="background: rgba(254, 229, 0, 0.1);">월 총 비용</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="price-highlight">
+                            <td><strong>GPT-4o</strong> <span class="price-badge recommended">추천</span></td>
+                            <td>$94.50</td>
+                            <td>$162.00</td>
+                            <td style="font-size: 18px; color: var(--kakao-yellow);"><strong>~$257 / 월</strong><br><small style="color: var(--text-muted);">약 35만원</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>GPT-4o-mini</strong></td>
+                            <td>$5.67</td>
+                            <td>$9.72</td>
+                            <td><strong>~$15 / 월</strong><br><small style="color: var(--text-muted);">약 2만원</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>GPT-4 Turbo</strong></td>
+                            <td>$378.00</td>
+                            <td>$486.00</td>
+                            <td><strong>~$864 / 월</strong><br><small style="color: var(--text-muted);">약 117만원</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 16px;">
+                    ※ Input 70% / Output 30% 비율 가정 | 환율 1,350원 기준 | 실제 비용은 사용량에 따라 변동
+                </p>
+            </div>
+
+            <!-- 비용 최적화 전략 -->
+            <div style="margin-top: 48px;">
+                <h3 style="font-size: 18px; margin-bottom: 20px;">🛡️ 비용 최적화 전략</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon yellow">⚡</div>
+                        <h3>툴 호출 우선순위</h3>
+                        <p><strong>캐시 → Tool2(리뷰) / Tool1(예약 재조회) → Tool3(GPT)</strong><br>GPT는 지식형 + 캐시 miss + Tool2 부족 조건에서만</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon blue">📊</div>
+                        <h3>필수 로그 항목</h3>
+                        <p>원문 질의, 기존검색 결과 유무, 컨텍스트 진입 여부, 캐시 hit/miss, 호출 툴 종류/횟수, 최종 결과 수</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon orange">🔄</div>
+                        <h3>모델 분기 전략</h3>
+                        <p><strong>단순 슬롯 파싱: GPT-4o-mini</strong><br><strong>지식/웹서치: GPT-4o</strong><br>작업 복잡도에 따라 모델 선택</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 비용 요약 카드 -->
+            <div style="margin-top: 48px; background: var(--bg-card); border-radius: 20px; padding: 32px; border: 1px solid rgba(255,255,255,0.06);">
+                <h3 style="font-size: 18px; margin-bottom: 24px; text-align: center;">📈 예상 월간 비용 요약</h3>
+                <div class="cost-summary-grid">
+                    <div class="cost-summary-item">
+                        <div class="cost-summary-value" style="color: var(--accent-green);">~$15</div>
+                        <div class="cost-summary-label">최저 (GPT-4o-mini)<br>약 2만원/월</div>
+                    </div>
+                    <div class="cost-summary-item">
+                        <div class="cost-summary-value">~$257</div>
+                        <div class="cost-summary-label">권장 (GPT-4o)<br>약 35만원/월</div>
+                    </div>
+                    <div class="cost-summary-item">
+                        <div class="cost-summary-value" style="color: var(--accent-pink);">~$864</div>
+                        <div class="cost-summary-label">최대 (GPT-4 Turbo)<br>약 117만원/월</div>
+                    </div>
+                </div>
+                <p style="text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 20px;">
+                    일 검색 10만건, 0건 비율 30%, 지식형 20%, 캐시 miss 30% 가정 시
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Schedule -->
+    <section id="schedule" class="slide">
+        <div class="slide-content">
+            <div class="section-header">
+                <div class="section-number">07</div>
+                <h2 class="section-title">MVP 범위 및 일정</h2>
+                <p class="section-desc">6~8주 개발 계획</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px;">
+                <div>
+                    <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--kakao-yellow);">📋 MVP 범위 (확정)</h3>
+                    <ul style="list-style: none;">
+                        <li style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start;">
+                            <span style="color: var(--accent-green);">✓</span>
+                            <span>기존 검색(정확매칭) 유지</span>
+                        </li>
+                        <li style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start;">
+                            <span style="color: var(--accent-green);">✓</span>
+                            <span>0건 시 컨텍스트 에이전트 실행</span>
+                        </li>
+                        <li style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start;">
+                            <span style="color: var(--accent-green);">✓</span>
+                            <span>Tool1 슬롯 변환 재조회: "경기 라운딩"류 해결</span>
+                        </li>
+                        <li style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start;">
+                            <span style="color: var(--accent-green);">✓</span>
+                            <span><strong>Tool2(통합리뷰DB) 시나리오 최소 6종</strong><br>
+                            <small style="color: var(--text-muted);">그린 빠름/느림, 그린 컨디션, 코스 관리, 밀림/진행, 초보자 친화, 시설/식당</small></span>
+                        </li>
+                        <li style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start;">
+                            <span style="color: var(--accent-green);">✓</span>
+                            <span><strong>Tool3(GPT웹서치) 시나리오 최소 3~5종</strong><br>
+                            <small style="color: var(--text-muted);">명문/접대, 최근 리모델링, 잡지 선정, 코스 스타일</small></span>
+                        </li>
+                        <li style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-start;">
+                            <span style="color: var(--accent-green);">✓</span>
+                            <span>캐시(툴 결과 캐시 적재 포함) + 필수 로그</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 style="font-size: 18px; margin-bottom: 24px; color: var(--kakao-yellow);">📅 일정 (6~8주)</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-week">WEEK 1-2</div>
+                            <div class="timeline-title">설계 & 정의</div>
+                            <div class="timeline-desc">intent/slots 스키마, 캐시 키/TTL 정책, 시나리오 정의</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="background: var(--accent-blue);"></div>
+                            <div class="timeline-week">WEEK 3-4</div>
+                            <div class="timeline-title">에이전트 개발</div>
+                            <div class="timeline-desc">컨텍스트 에이전트(캐시/툴 호출/후보 생성), Tool1 재조회</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="background: var(--accent-pink);"></div>
+                            <div class="timeline-week">WEEK 5-6</div>
+                            <div class="timeline-title">툴 연동</div>
+                            <div class="timeline-desc">Tool2 시나리오 적용(랭킹/후보), Tool3(GPT웹서치) + 캐시 적재</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="background: var(--accent-green);"></div>
+                            <div class="timeline-week">WEEK 7-8</div>
+                            <div class="timeline-title">QA & 튜닝</div>
+                            <div class="timeline-desc">QA/로그/튜닝(0건 감소, 품질/속도/비용)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: Summary -->
+    <section id="summary" class="slide" style="background: radial-gradient(ellipse at 50% 50%, rgba(254, 229, 0, 0.08) 0%, transparent 70%), var(--bg-dark);">
+        <div class="slide-content">
+            <div class="section-header" style="text-align: center;">
+                <div class="section-number">SUMMARY</div>
+                <h2 class="section-title">최종 정리</h2>
+            </div>
+
+            <div class="summary-box">
+                <p class="summary-quote">
+                    "정확매칭은 즉시 <strong>기존 검색</strong>으로,<br>
+                    0건이면 컨텍스트 에이전트가 <strong>캐시 우선</strong>으로 후보를 만들고,<br>
+                    최종은 <strong>예약DB 조회 결과만</strong> 기존 리스트 UI에 노출한다."
+                </p>
+            </div>
+
+            <div style="margin-top: 48px;">
+                <div class="summary-box" style="background: linear-gradient(135deg, rgba(90, 200, 250, 0.1) 0%, rgba(175, 82, 222, 0.1) 100%); border-color: rgba(90, 200, 250, 0.2);">
+                    <p class="summary-quote" style="font-size: 20px;">
+                        "캐시는 GPT 결과만이 아니라<br>
+                        <strong>리뷰 후보/매핑/후보 TopK/파싱 결과</strong> 등<br>
+                        툴 결과 중 <strong>재사용 가치 있는 것들을 적재</strong>한다."
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 24px; margin-top: 60px; flex-wrap: wrap;">
+                <div class="card" style="text-align: center; min-width: 200px;">
+                    <div class="card-icon yellow" style="margin: 0 auto 16px;">🎯</div>
+                    <h3>목표</h3>
+                    <p>0건 → 의미있는 결과</p>
+                </div>
+                <div class="card" style="text-align: center; min-width: 200px;">
+                    <div class="card-icon green" style="margin: 0 auto 16px;">⚡</div>
+                    <h3>원칙</h3>
+                    <p>기존 검색 우선, 캐시 우선</p>
+                </div>
+                <div class="card" style="text-align: center; min-width: 200px;">
+                    <div class="card-icon blue" style="margin: 0 auto 16px;">💰</div>
+                    <h3>비용</h3>
+                    <p>GPT-4o 기준 월 ~35만원</p>
+                </div>
+                <div class="card" style="text-align: center; min-width: 200px;">
+                    <div class="card-icon pink" style="margin: 0 auto 16px;">🏌️</div>
+                    <h3>결과</h3>
+                    <p>기존 UI 100% 유지</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Scroll indicator
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Update scroll dots on scroll
+        const sections = ['hero', 'background', 'flow', 'tools', 'scenarios', 'cache', 'cost', 'schedule', 'summary'];
+        const dots = document.querySelectorAll('.scroll-dot');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const element = document.getElementById(section);
+                if (element) {
+                    const rect = element.getBoundingClientRect();
+                    if (rect.top <= window.innerHeight / 2) {
+                        current = section;
+                    }
+                }
+            });
+
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (sections[index] === current) {
+                    dot.classList.add('active');
+                }
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const currentIndex = sections.findIndex(s => {
+                const el = document.getElementById(s);
+                const rect = el.getBoundingClientRect();
+                return rect.top <= window.innerHeight / 2 && rect.bottom > 0;
+            });
+
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                if (currentIndex < sections.length - 1) {
+                    scrollToSection(sections[currentIndex + 1]);
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    scrollToSection(sections[currentIndex - 1]);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
